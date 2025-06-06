@@ -1,0 +1,27 @@
+# datasource connection properties
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/wallet_demo
+    username: root
+    password: 123456
+
+# mybatis configuration properties
+# 1.automatic insert table variables and bean names
+# 2.alias
+# 3.inform spring boot, mapper configuration file location
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.wallet.entity
+  mapper-locations: classpath:/mapper/*.xml
+
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+  file:
+    name: logs/wallet-service.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
