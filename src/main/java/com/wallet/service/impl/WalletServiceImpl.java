@@ -8,35 +8,45 @@ import com.wallet.exception.WalletNotFoundException;
 import com.wallet.repository.TransactionRecordMapper;
 import com.wallet.repository.UserBalanceMapper;
 import com.wallet.service.WalletService;
+import com.wallet.util.TokenUtils;
 import com.wallet.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 @Slf4j
 public class WalletServiceImpl implements WalletService {
 
     @Autowired
     private final UserBalanceMapper userBalanceMapper;
+    @Autowired
     private final TransactionRecordMapper transactionRecordMapper;
+//    @Autowired
+//    private final TokenUtils tokenUtils;
 
     public WalletServiceImpl(UserBalanceMapper userBalanceMapper,
-                         TransactionRecordMapper transactionRecordMapper) {
+                         TransactionRecordMapper transactionRecordMapper,
+                             TokenUtils tokenUtils) {
         this.userBalanceMapper = userBalanceMapper;
         this.transactionRecordMapper = transactionRecordMapper;
+//        this.tokenUtils = tokenUtils;
     }
-
     @Override
-    public void createUserWallet(String userId) {
+    public void createUserWallet(String userId, String token) {
         if (userBalanceMapper.selectByUserId(userId) != null) {
             log.warn(Utils.LOG_WALLET_EXISTS, userId);
             throw new WalletException(Utils.ERR_WALLET_EXISTS + userId);
+        }
+
+        if (!TokenUtils.validateToken(userId, token)) {
+            throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
         }
 
         // wallet creating
@@ -48,11 +58,15 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void executeTransaction(String userId, BigDecimal amount, String type, String description) {
+    public void executeTransaction(String userId, BigDecimal amount, String type, String description, String token) {
         UserBalance userBalance = userBalanceMapper.selectByUserId(userId);
         if(userBalance == null) {
             log.error(Utils.LOG_WALLET_NOT_FOUND, userId);
             throw new WalletException(Utils.ERR_WALLET_NOT_FOUND);
+        }
+
+        if (!TokenUtils.validateToken(userId, token)) {
+            throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
         }
 
         BigDecimal balance = userBalance.getBalance().add(amount);
@@ -78,18 +92,26 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public BigDecimal getBalance(String userId) {
+    public BigDecimal getBalance(String userId, String token) {
         UserBalance userBalance = userBalanceMapper.selectByUserId(userId);
         if(userBalance == null) {
             log.error(Utils.LOG_WALLET_NOT_FOUND, userId);
             throw new WalletException(Utils.ERR_WALLET_NOT_FOUND + userId);
         }
 
+        if (!TokenUtils.validateToken(userId, token)) {
+            throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
+        }
+
         return userBalance.getBalance();
     }
 
     @Override
-    public PageResponse<TransactionRecord> getTransactions(String userId, int page, int size) {
+    public PageResponse<TransactionRecord> getTransactions(String userId, int page, int size, String token) {
+
+        if (!TokenUtils.validateToken(userId, token)) {
+            throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
+        }
         int total = transactionRecordMapper.countByUserId(userId);
         int offset = (page - 1) * size;
 
@@ -99,9 +121,12 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public void deleteUserWallet(String userId) {
-        try {
+    public void deleteUserWallet(String userId, String token) {
+        if (!TokenUtils.validateToken(userId, token)) {
+            throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
+        }
 
+        try {
             int recordsDeleted = transactionRecordMapper.deleteByUserId(userId);
             int walletDeleted = userBalanceMapper.deleteByUserId(userId);
             if (walletDeleted == 0) {
@@ -115,5 +140,4 @@ public class WalletServiceImpl implements WalletService {
             throw new WalletException(Utils.ERR_DELETE_FAILED + userId);
         }
     }
-
 }

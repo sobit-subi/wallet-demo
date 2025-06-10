@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wallet.repository.UserMapper" >
+
+    <insert id="createUser">
+        INSERT INTO user (user_id,password,name,phone,email,token)
+        VALUES (#{userId},#{password},#{name},#{phone},#{email},#{token})
+    </insert>
+    <update id="updateToken">
+        UPDATE user SET token=#{token} WHERE user_id = #{userId}
+    </update>
+    <select id="findUserByUserId" resultType="User">
+        SELECT * FROM user
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

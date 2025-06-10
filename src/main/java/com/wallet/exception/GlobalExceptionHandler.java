@@ -1,5 +1,6 @@
 package com.wallet.exception;
 
+import com.wallet.common.Result;
 import com.wallet.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,19 @@ public class GlobalExceptionHandler {
         return Utils.CODE_VALIDATION_ERROR + errors;
     }
 
+    @ExceptionHandler(ServiceException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result handleServiceException(ServiceException e) {
+        log.warn(e.getCode(), e.getMessage());
+        return Result.Result(e.getCode(), e.getMessage(), null);
+    }
+
     @ExceptionHandler(WalletException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleWalletException(WalletException ex) {
-        log.error(":wallet operation error: {}", ex.getMessage());
+        log.error("wallet operation error: {}", ex.getMessage());
         return Utils.CODE_WALLET_ERROR + ex.getMessage();
     }
 
@@ -61,7 +70,6 @@ public class GlobalExceptionHandler {
         return Utils.CODE_INTERNAL_ERROR + ex.getMessage();
     }
 
-    // 处理交易记录不存在异常
     @ExceptionHandler(TransactionNotFoundException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -18,7 +18,7 @@ public class Utils {
     public static final String ERR_DELETE_FAILED = "wallet delete failed: ";
     public static final String ERR_TRANSACTION_NOT_FOUND = "Transaction record does not exist: ";
     public static final String ERR_TRANSACTION_DELETE_FAILED = "Transaction record delete failed: ";
-
+    public static final String ERR_TOKEN_NOT_FOUND = "token does not exist: ";
     // Succeed response
     public static final String MSG_WALLET_CREATED = "wallet created: ";
     public static final String MSG_RECHARGE_SUCCESS = "recharge success";
@@ -28,6 +28,7 @@ public class Utils {
 
     // Validation failed
     public static final String VALID_TRANSACTION_ID_BLANK = "transaction id is blank";
+    public static final String VALID_TOKEN_BLANK = "token is blank";
     public static final String VALID_USER_ID_BLANK = "user id is blank";
     public static final String VALID_USER_ID_LENGTH = "user id length in 3-50 letters";
     public static final String VALID_AMOUNT_NULL = "amount is null";

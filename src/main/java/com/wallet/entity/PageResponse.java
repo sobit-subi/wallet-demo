@@ -13,10 +13,16 @@ public class PageResponse<T> {
     private List<T> content;
     private int currentPage;
     private int pageSize;
-    private int totalRecords;
+    private int totalItems;
+    private int totalPages;
 
-    public int getTotalPages() {
-        return (int) Math.ceil((double)totalRecords / pageSize);
+    public PageResponse(List<T> content, int currentPage, int pageSize, int totalItems) {
+        this.content = content;
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+        this.totalItems = totalItems;
+        this.totalPages = (int) Math.ceil((double) totalItems / pageSize);
+        System.out.println("totalPages: " + totalPages);
     }
 
 }
