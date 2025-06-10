@@ -136,3 +136,31 @@ POST /api/wallet/consume?userId=user_001&amount=250.00&remark=summer clothes and
 
 ### 15. recharge
 POST /api/wallet/recharge?userId=user_001&amount=700.00&remark=project award
+
+CREATE TABLE user (
+id BIGINT AUTO_INCREMENT PRIMARY KEY
+user_id VARCHAR(50) NOT NULL UNIQUE,
+password VARHCAR(20) NOT NULL,
+name VARCHAR(30) NOT NULL,
+phone VARHCAR(13),
+email VARCHAR(30),
+token VARCHAR(500)
+);
+
+CREATE TABLE user_balance(
+id BIGINT AUTO_INCREMENT PRIMARY KEY,
+user_id VARCHAR(50) NOT NULL,
+balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+CREATE TABLE transaction_record (
+id BIGINT AUTO_INCREMENT PRIMARY KEY,
+user_id VARCHAR(50) NOT NULL,
+amount DECIMAL(15,2) NOT NULL,
+type ENUM('RECHARGE', 'CONSUME', 'REFUND') NOT NULL,
+description VARCHAR(255),
+create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (user_id) REFERENCES user(user_id)
+);	
