@@ -30,7 +30,7 @@ public class TokenUtils {
     // generate new token available for 2 hours from now
     public static String generateToken(String userId, String sign) {
         return JWT.create().withAudience(userId)  // user id save in token as audience
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // token expires after 2 hours
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // token expires after 2 hours
                 .sign(Algorithm.HMAC256(sign));   // password is token's secret key
     }
 

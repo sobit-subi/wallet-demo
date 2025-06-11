@@ -12,6 +12,7 @@ import com.wallet.util.TokenUtils;
 import com.wallet.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,17 +108,13 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public PageResponse<TransactionRecord> getTransactions(String userId, int page, int size, String token) {
+    public List<TransactionRecord> getTransactions(String userId, String token) {
 
         if (!TokenUtils.validateToken(userId, token)) {
             throw new WalletException(Utils.ERR_TOKEN_NOT_FOUND + userId);
         }
-        int total = transactionRecordMapper.countByUserId(userId);
-        int offset = (page - 1) * size;
 
-        List<TransactionRecord> records = transactionRecordMapper.selectByUserIdWithPagination(userId, offset, size);
-
-        return new PageResponse<>(records, total, offset, size);
+        return transactionRecordMapper.selectByUserId(userId);
     }
 
     @Override

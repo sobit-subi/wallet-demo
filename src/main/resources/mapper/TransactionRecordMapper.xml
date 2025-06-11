@@ -7,10 +7,9 @@
         VALUES (#{userId},#{amount},#{type},#{description})
     </insert>
 
-    <select id="selectByUserIdWithPagination" resultType="TransactionRecord">
+    <select id="selectByUserId" resultType="TransactionRecord">
         SELECT * FROM transaction_record
         WHERE user_id = #{userId} ORDER BY create_time DESC
-            LIMIT #{offset}, #{limit}
     </select>
     <select id="countByUserId" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM transaction_record

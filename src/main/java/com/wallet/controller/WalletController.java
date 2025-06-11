@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/wallet")
@@ -107,24 +108,15 @@ public class WalletController {
     }
 
     @GetMapping("/transactions")
-    public ResponseEntity<PageResponse<TransactionRecord>> getTransactions(
+    public ResponseEntity<List<TransactionRecord>> getTransactions(
             @RequestHeader("token")
             @NotBlank(message = Utils.VALID_TOKEN_BLANK) String token,
 
             @RequestParam
             @NotBlank(message = Utils.VALID_USER_ID_BLANK)
-            String userId,
-
-            @RequestParam(defaultValue = "1")
-            @Min(value = 1, message = Utils.VALID_PAGE_MIN)
-            int page,
-
-            @RequestParam(defaultValue = "10")
-            @Min(value = 1, message = Utils.VALID_SIZE_MIN)
-            @Max(value = 100, message = Utils.VALID_SIZE_MAX)
-            int size
+            String userId
     ) {
-        return ResponseEntity.ok(walletService.getTransactions(userId, page, size, token));
+        return ResponseEntity.ok(walletService.getTransactions(userId, token));
     }
 
     @DeleteMapping("/delete")
