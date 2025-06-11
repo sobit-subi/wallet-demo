@@ -72,7 +72,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         // check user data by id from database
         User user = userMapper.findUserByUserId(userId);
-        if (user == null || user.getToken().equals(token)) {
+        if (user == null) {
             throw new ServiceException(HttpStatus.UNAUTHORIZED.toString(), "Please login!");
         }
 

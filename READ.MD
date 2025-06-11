@@ -163,4 +163,14 @@ type ENUM('RECHARGE', 'CONSUME', 'REFUND') NOT NULL,
 description VARCHAR(255),
 create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (user_id) REFERENCES user(user_id)
-);	
+);
+
+### for the sake of simplicity in coding part haven't implemented check expired token
+### and refresh it
+### in databse set an event to delete expired token from user database
+ALTER TABLE user ADD COLUMN token_expiry TIMESTAMP
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT delete_expired_token
+ON SCHEDULAR EVERY 1 MINUTE
+DO 
+DELETE FROM user WHERE token_expiry < NOW()
